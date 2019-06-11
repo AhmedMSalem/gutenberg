@@ -1062,6 +1062,12 @@
 		"parent": "packages"
 	},
 	{
+		"title": "@wordpress/babel-block.macro",
+		"slug": "packages-babel-block.macro",
+		"markdown_source": "../packages/babel-block.macro/README.md",
+		"parent": "packages"
+	},
+	{
 		"title": "@wordpress/babel-plugin-import-jsx-pragma",
 		"slug": "packages-babel-plugin-import-jsx-pragma",
 		"markdown_source": "../packages/babel-plugin-import-jsx-pragma/README.md",

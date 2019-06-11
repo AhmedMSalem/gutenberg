@@ -1,0 +1,35 @@
+{
+	"name": "@wordpress/babel-block.macro",
+	"version": "1.0.0-alpha.1",
+	"description": "Babel block macro.",
+	"author": "The WordPress Contributors",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"block",
+		"babel",
+		"macro"
+	],
+	"homepage": "https://github.com/WordPress/gutenberg/tree/master/packages/babel-block.macro/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/WordPress/gutenberg.git",
+		"directory": "packages/babel-block.macro"
+	},
+	"bugs": {
+		"url": "https://github.com/WordPress/gutenberg/issues"
+	},
+	"engines": {
+		"node": ">=10"
+	},
+	"files": [
+		"index.js"
+	],
+	"main": "index.js",
+	"dependencies": {
+		"babel-plugin-macros": "^2.6.1"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
