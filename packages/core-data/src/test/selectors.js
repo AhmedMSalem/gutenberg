@@ -15,6 +15,7 @@ import {
 	getAutosave,
 	getAutosaves,
 	getCurrentUser,
+	getReferenceByDistinctEdits,
 } from '../selectors';
 
 describe( 'getEntityRecord', () => {
@@ -275,3 +276,19 @@ describe( 'getCurrentUser', () => {
 		expect( getCurrentUser( state ) ).toEqual( currentUser );
 	} );
 } );
+
+describe( 'getReferenceByDistinctEdits', () => {
+	it( 'should return referentially equal values across unchanging state', () => {
+		const state = { undo: {} };
+
+		expect( getReferenceByDistinctEdits( state ) ).toBe( getReferenceByDistinctEdits( state ) );
+	} );
+
+	it( 'should return referentially unequal values across changing state', () => {
+		const beforeState = { undo: {} };
+		const afterState = { undo: {} };
+
+		expect( getReferenceByDistinctEdits( beforeState ) ).not.toBe( getReferenceByDistinctEdits( afterState ) );
+	} );
+} );
+

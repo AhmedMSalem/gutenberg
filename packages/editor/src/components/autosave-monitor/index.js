@@ -24,6 +24,8 @@ export class AutosaveMonitor extends Component {
 			this.didAutosaveForEditsReference = true;
 		}
 
+		console.log( 'componentDidUpdate' );
+
 		if (
 			prevProps.isDirty !== isDirty ||
 			prevProps.isAutosaveable !== isAutosaveable ||
@@ -60,9 +62,12 @@ export class AutosaveMonitor extends Component {
 export default compose( [
 	withSelect( ( select, ownProps ) => {
 		const {
+			getReferenceByDistinctEdits,
+		} = select( 'core' );
+
+		const {
 			isEditedPostDirty,
 			isEditedPostAutosaveable,
-			getReferenceByDistinctEdits,
 			isAutosavingPost,
 			getEditorSettings,
 		} = select( 'core/editor' );
