@@ -12,31 +12,45 @@ pluginTester( {
 		presets: [ '@wordpress/babel-preset-default' ],
 	},
 	tests: {
-		'valid metadata file name': {
+		'valid metadata file': {
 			code: `
-				import macro from '../macro';
-				const metadata = macro( './fixtures/block.json' );
+				import blockMetadata from '../macro';
+				const metadata = blockMetadata( './fixtures/block.json' );
+			`,
+			snapshot: true,
+		},
+		'valid metadata file with i18n support': {
+			code: `
+				import blockMetadata from '../macro';
+				const metadata = blockMetadata( './fixtures/block-i18n.json' );
+			`,
+			snapshot: true,
+		},
+		'valid metadata file with i18n support and default text domain': {
+			code: `
+				import blockMetadata from '../macro';
+				const metadata = blockMetadata( './fixtures/block-i18n-default.json' );
 			`,
 			snapshot: true,
 		},
 		'invalid metadata file name': {
 			code: `
-				import macro from '../macro';
-				const metadata = macro( './invalid-file.json' );
+				import blockMetadata from '../macro';
+				const metadata = blockMetadata( './invalid-file.json' );
 			`,
 			error: 'Invalid file name provided: packages/babel-block.macro/test/invalid-file.json.',
 		},
 		'invalid usage: as function argument': {
 			code: `
-				import macro from '../macro';
-        		const metadata = doSomething( macro );
+				import blockMetadata from '../macro';
+        		const metadata = doSomething( blockMetadata );
       		`,
 			error: true,
 		},
 		'invalid usage: missing file path': {
 			code: `
-				import macro from '../macro';
-				const metadata = macro;
+				import blockMetadata from '../macro';
+				const metadata = blockMetadata;
 			`,
 			error: true,
 		},

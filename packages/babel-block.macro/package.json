@@ -27,7 +27,8 @@
 	],
 	"main": "index.js",
 	"dependencies": {
-		"babel-plugin-macros": "^2.6.1"
+		"babel-plugin-macros": "^2.6.1",
+		"lodash": "^4.17.14"
 	},
 	"publishConfig": {
 		"access": "public"

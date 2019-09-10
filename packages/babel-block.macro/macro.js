@@ -6,6 +6,27 @@ const { existsSync, readFileSync } = require( 'fs' );
 const { mapKeys, pick } = require( 'lodash' );
 const { dirname, join, relative } = require( 'path' );
 
+const aliases = {
+	styleVariations: 'styles',
+};
+const whitelistedProperties = [
+	'name',
+	'title',
+	'category',
+	'parent',
+	'icon',
+	'description',
+	'keywords',
+	'attributes',
+	'styles',
+];
+const translatableProperties = [
+	'title',
+	'description',
+	'keywords',
+	'styles',
+];
+
 function getFilename( [ filenamePath ], state ) {
 	const filename = filenamePath.evaluate().value;
 
@@ -26,48 +47,87 @@ function readMetadata( filename ) {
 }
 
 function formatMetadata( metadata, types ) {
-	const aliases = {
-		styleVariations: 'styles',
-	};
 	const replaceWithAlias = ( _, key ) => {
 		return aliases[ key ] || key;
 	};
-	const whitelistedProperties = [
-		'name',
-		'title',
-		'category',
-		'parent',
-		'icon',
-		'description',
-		'keywords',
-		'attributes',
-		'styles',
-	];
-
 	const metadataFiltered = pick(
 		mapKeys( metadata, replaceWithAlias ),
 		whitelistedProperties
 	);
+	return types.valueToNode( metadataFiltered );
+}
 
-	const metadataNode = types.valueToNode( metadataFiltered );
-	/*const translatedProperties = [
-		'title',
-		'description',
-		'keywords',
-	];*/
-
-	return metadataNode;
+function wrapTranslatableProperty( node, name, textDomain, types ) {
+	if ( node.type === 'StringLiteral' ) {
+		node = types.callExpression(
+			types.identifier( '_x' ),
+			[
+				node,
+				types.stringLiteral( `block ${ name }` ),
+				textDomain !== 'default' && types.stringLiteral( textDomain ),
+			].filter( Boolean )
+		);
+	} else if ( node.type === 'ArrayExpression' ) {
+		node.elements = node.elements.map(
+			( elementNode ) => wrapTranslatableProperty(
+				elementNode,
+				name,
+				textDomain,
+				types
+			)
+		);
+	} else if ( node.type === 'ObjectExpression' ) {
+		node.properties.forEach( ( propertyNode ) => {
+			if ( propertyNode.key.name === 'label' ) {
+				propertyNode.value = wrapTranslatableProperty(
+					propertyNode.value,
+					name,
+					textDomain,
+					types
+				);
+			}
+		} );
+	}
+	return node;
 }
 
 function babelBlockMacro( { references, state, babel } ) {
 	const { types } = babel;
 	references.default.forEach( ( referencePath ) => {
 		if ( referencePath.parentPath.type === 'CallExpression' ) {
-			const metadata = readMetadata(
+			const { textDomain, ...metadata } = readMetadata(
 				getFilename( referencePath.parentPath.get( 'arguments' ), state )
 			);
 
 			referencePath.parentPath.replaceWith( formatMetadata( metadata, types ) );
+			if ( textDomain ) {
+				referencePath.parentPath.node.properties.forEach( ( propertyPath ) => {
+					if ( translatableProperties.includes( propertyPath.key.name ) ) {
+						if ( ! state.hasTranslationImportDeclaration ) {
+							if ( ! referencePath.scope.hasBinding( '_x' ) ) {
+								const importDeclaration = types.importDeclaration(
+									[
+										types.importSpecifier(
+											types.identifier( '_x' ),
+											types.identifier( '_x' )
+										),
+									],
+									types.stringLiteral( '@wordpress/i18n' )
+								);
+								referencePath.scope.getProgramParent().path
+									.unshiftContainer( 'body', importDeclaration );
+							}
+							state.hasTranslationImportDeclaration = true;
+						}
+						propertyPath.value = wrapTranslatableProperty(
+							propertyPath.value,
+							propertyPath.key.name,
+							textDomain,
+							types
+						);
+					}
+				} );
+			}
 		} else {
 			throw new Error(
 				`@wordpress/babel-block.macro can only be used as function call. You tried ${ referencePath.parentPath.type }.`,
