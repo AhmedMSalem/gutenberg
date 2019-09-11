@@ -1,6 +1,7 @@
 /**
  * WordPress dependencies
  */
+import blockMetadata from '@wordpress/babel-block.macro';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -9,19 +10,15 @@ import { __ } from '@wordpress/i18n';
 import deprecated from './deprecated';
 import edit from './edit';
 import icon from './icon';
-import metadata from './block.json';
 import save from './save';
 import transforms from './transforms';
 
-const { name } = metadata;
+const { name, ...metadata } = blockMetadata( './block.json' );
 
 export { metadata, name };
 
 export const settings = {
-	title: __( 'Paragraph' ),
-	description: __( 'Start with the building block of all narrative.' ),
 	icon,
-	keywords: [ __( 'text' ) ],
 	example: {
 		attributes: {
 			content: __( 'Start writing, no matter what. The water does not flow until the faucet is turned on.' ),

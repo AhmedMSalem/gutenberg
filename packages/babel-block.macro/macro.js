@@ -6,6 +6,7 @@ const { existsSync, readFileSync } = require( 'fs' );
 const { mapKeys, pick } = require( 'lodash' );
 const { dirname, join, relative } = require( 'path' );
 
+const i18nVariable = '_x';
 const aliases = {
 	styleVariations: 'styles',
 };
@@ -58,9 +59,9 @@ function formatMetadata( metadata, types ) {
 }
 
 function wrapTranslatableProperty( node, name, textDomain, types ) {
-	if ( node.type === 'StringLiteral' ) {
+	if ( node.type === 'StringLiteral' && node.value ) {
 		node = types.callExpression(
-			types.identifier( '_x' ),
+			types.identifier( i18nVariable ),
 			[
 				node,
 				types.stringLiteral( `block ${ name }` ),
@@ -104,12 +105,12 @@ function babelBlockMacro( { references, state, babel } ) {
 				referencePath.parentPath.node.properties.forEach( ( propertyPath ) => {
 					if ( translatableProperties.includes( propertyPath.key.name ) ) {
 						if ( ! state.hasTranslationImportDeclaration ) {
-							if ( ! referencePath.scope.hasBinding( '_x' ) ) {
+							if ( ! referencePath.scope.hasBinding( i18nVariable ) ) {
 								const importDeclaration = types.importDeclaration(
 									[
 										types.importSpecifier(
-											types.identifier( '_x' ),
-											types.identifier( '_x' )
+											types.identifier( i18nVariable ),
+											types.identifier( i18nVariable )
 										),
 									],
 									types.stringLiteral( '@wordpress/i18n' )
