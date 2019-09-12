@@ -499,5 +499,5 @@ export const hasFetchedAutosaves = createRegistrySelector( ( select ) => ( state
  */
 export const getReferenceByDistinctEdits = createSelector(
 	() => [],
-	( state ) => [ state.undo ],
+	( state ) => [ state.undo.length, state.undo.offset ],
 );
