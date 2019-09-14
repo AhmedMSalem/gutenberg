@@ -24,8 +24,6 @@ export class AutosaveMonitor extends Component {
 			this.didAutosaveForEditsReference = true;
 		}
 
-		console.log( 'componentDidUpdate' );
-
 		if (
 			prevProps.isDirty !== isDirty ||
 			prevProps.isAutosaveable !== isAutosaveable ||

@@ -354,18 +354,6 @@ export function undo( state = UNDO_INITIAL_STATE, action ) {
 	return state;
 }
 
-function tap( name, reducer ) {
-	return function( state, action ) {
-		const newState = reducer( state, action );
-		if ( newState !== state ) {
-			console.log( 'reducing ' + name, action );
-			console.log( 'before', state );
-			console.log( 'after', newState );
-		}
-		return newState;
-	};
-}
-
 /**
  * Reducer managing embed preview data.
  *
@@ -436,7 +424,7 @@ export default combineReducers( {
 	taxonomies,
 	themeSupports,
 	entities,
-	undo: tap( 'undo', undo ),
+	undo,
 	embedPreviews,
 	userPermissions,
 	autosaves,

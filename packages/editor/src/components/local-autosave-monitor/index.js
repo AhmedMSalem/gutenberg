@@ -25,7 +25,7 @@ const requestIdleCallback = window.requestIdleCallback ? window.requestIdleCallb
  *
  * @var {number}
  */
-const AUTOSAVE_INTERVAL_SECONDS = 3;
+const AUTOSAVE_INTERVAL_SECONDS = 15;
 
 /**
  * Function which returns true if the current environment supports browser
@@ -78,7 +78,6 @@ function useAutosaveCallback() {
 
 	return useCallback( () => {
 		const saveToSessionStorage = () => {
-			console.log( 'Local autosave' );
 			window.sessionStorage.setItem( postKey( postId ), JSON.stringify( {
 				post_title: getEditedPostAttribute( 'title' ),
 				content: getEditedPostAttribute( 'content' ),
